@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" ><![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en" >
+<!--<![endif]-->
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>HTML5 Notifications</title>
+		<link rel="stylesheet" href="css/normalize.css" />
+		<link rel="stylesheet" href="css/foundation.min.css" />
+		<link rel="stylesheet" href="css/codemirror.css" />
+		<link rel="stylesheet" href="css/app.css" />
+		<script>
+			'use strict';
+			
+			var langs = {
+				"Built with": "Construido con",
+				"Button": "Botón",
+				"Choose an image": "Elige una imagen",
+				"Default": "Por defecto",
+				"Developed by": "Desarrollado por",
+				"Display": "Mostrar",
+				"Display notification": "Mostrar notificación",
+				"Display with": "Mostrar con",
+				"Download": "Descarga",
+				"DuckDuckGo goodies": "Goodies de DuckDuckGo",
+				"Get code": "Obtener código",
+				"here": "aquí",
+				"HTML5 Notifications": "Notificaciones HTML5",
+				"HTML code": "Código HTML",
+				"File": "Archivo",
+				"for Twitter and": " para Twitter y",
+				"From Twitter": "Desde Twitter",
+				"Icon": "Icono",
+				"Link": "Enlace",
+				"Message": "Mensaje",
+				"No": "No",
+				"Permission": "Permiso",
+				"The Notifications API allows you to display notifications to the user on desktop computers and mobile devices": "La API de Notificaciones permite mostrar mensajes en computadoras de escritorio y dispositivos móviles",
+				"Title": "Título",
+				"sec": "seg",
+				"Select all": "Seleccionar todo",
+				"Show after": "Demorar",
+				"the latest version of Firefox": "la última versión de Firefox",
+				"User profile info": "Perfil de Twitter",
+				"Username": "Usuario",
+				"Yes": "Sí",
+				"Your browser does not support all features of this demo": "Tu navegador no soporta todas las características de esta demo"
+			}, curLang;
+ 
+			if (document.URL.indexOf("#") > 0) {
+				curLang = document.URL.split("#").pop();
+			} else {
+				curLang = navigator.language ? navigator.language.substring(0, 2) : navigator.userLanguage.substring(0, 2);
+			}
+			
+			function _(text, returns) {
+				var translated = curLang === "es" ? langs[text] : text;				
+
+				if (returns) {
+					return translated ? translated : text;
+				} else {
+					document.write('<span data-lang="' + text + '">' + (translated ? translated : text) + '</span>');
+				}
+			}
+			
+			var Notification = window.Notification || window.mozNotification || window.webkitNotification || window.msNotification,
+				FileReader = window.FileReader || window.mozFileReader || window.webkitFileReader || window.msFileReader;
+
+		</script>
+	</head>
+	<body>
+		<header>
+			<div class="row">
+				<div class="large-2 large-offset-10 small-centered columns">
+					<dl class="sub-nav">
+						<dd>
+							<a href="#en" id="langEn">English</a>
+						</dd>
+						<dd>
+							<a href="#es" id="langEs">Español</a>
+						</dd>
+					</dl>
+				</div>
+			</div>
+			<div class="row">
+				<div class="large-12 columns">
+					<h2><script>_("HTML5 Notifications")</script></h2>
+					<p><script>_("The Notifications API allows you to display notifications to the user on desktop computers and mobile devices")</script>.</p>
+					<hr />
+				</div>
+			</div>
+		</header>
+		
+		<div class="row" id="msgUnsupported">
+			<div class="large-12 columns">
+				<div data-alert class="alert-box alert round text-center">
+					<script>_("Your browser does not support all features of this demo")</script>.
+					<script>_("Download")</script> <a href="https://www.mozilla.org/firefox/" target="_blank"><script>_("here")</script></a> 
+					<script>_("the latest version of Firefox")</script>
+				</div>
+			</div>
+		</div>
+		
+		<section>
+			<form class="custom" id="frmMain">
+				<div class="row">
+					<div class="large-2 columns">
+						<h4><script>_("Permission")</script></h4>
+					</div>
+					<div class="large-10 columns">
+						<div class="large-2">
+							<div class="switch round">
+								<input id="chkDenied" name="permission" type="radio" checked />
+								<label for="chkDenied" onclick="" data-lang="No" data-init-lang>No</script></label>
+
+								<input id="chkGranted" name="permission" type="radio" />
+								<label for="chkGranted" onclick="" data-lang="Yes" data-init-lang>Yes</script></label>
+
+							  <span></span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="large-2 columns">
+						<h4><script>_("Title")</script> *</h4>
+					</div>
+					<div class="large-10 columns">
+						<input id="txtTitle" type="text" required maxlength="100" disabled />
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="large-2 columns">
+						<h4><script>_("Message")</script></h4>
+					</div>
+					<div class="large-10 columns">
+						<textarea id="txtMessage" maxlength="250" disabled></textarea>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="large-2 columns">
+						<h4><script>_("Icon")</script></h4>
+					</div>
+					<div class="large-3 columns">
+						<select id="selIcon" class="dropdown" disabled>
+							<option value="0" selected data-lang="Default" data-init-lang>Default</option>
+							<option value="1" data-lang="URL" data-init-lang>URL</option>
+							<option value="2" data-lang="File" data-init-lang>File</option>
+						</select>
+					</div>
+					<div class="large-7 columns">
+						<input type="url" id="txtUrl" disabled placeholder="" required />
+						<input type="text" class="file" id="txtFile" disabled />
+						<span id="spnFile">
+							<div class="row collapse">
+								<div class="small-5 large-4 columns">
+									<input type="file" id="filIcon" />
+									<button type="button" class="small alert button prefix" onclick="$(this).prev().click()"><script>_("Choose an image")</script></button>
+								</div>
+								<div class="small-7 large-8 columns">
+									<input type="text" id="txtFileName" class="input-small" readonly />
+								</div>
+							</div>
+							<input type="hidden" id="hidFile" />
+						</span>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="large-2 columns">
+						<h4><script>_("Show after")</script></h4>
+					</div>
+					<div class="large-10 columns">
+						<div class="row">
+							<div class="large-2 columns">
+								<div class="row collapse">
+									<div class="small-6 large-6 columns">
+										<input type="number" id="txtSeconds" min="0" max="60" value="0" pattern="^\d+$" disabled />
+									</div>
+									<div class="small-6 large-6 columns">
+										<span class="postfix radius"><script>_("sec")</script></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="large-12 columns">
+						<hr />
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="large-4 columns">
+						<button class="large success button expand" id="btnDisplay" disabled><script>_("Display notification")</script></button>
+					</div>
+					<div class="large-4 columns">
+						<button class="large button expand hide-for-small" id="btnCode" disabled><script>_("Get code")</script></button>
+					</div>
+					<div class="large-4 columns">
+						<button class="large button expand" id="btnTwitter" type="button" disabled data-reveal-id="modTwitter"><script>_("From Twitter")</script></button>
+					</div>
+					<hr />
+				</div>
+			</form>
+		</section>
+		
+		<footer>
+			<div class="row">
+				<div class="large-12 columns large-centered text-center">
+					<small><script>_("Developed by")</script> <a href="https://twitter.com/elfoxero" target="_blank">Jhon Klever</a></small>
+				</div>
+				<div class="large-12 columns large-centered text-center">
+					<small>
+						<script>_("Built with")</script> <a href="http://jquery.com/" target="_blank">jQuery</a>, 
+						<a href="http://foundation.zurb.com/" target="_blank">Foundation</a>, 
+						<a href="https://duckduckgo.com/goodies#Social/_at_duckduckgo" target="_blank"><script>_("DuckDuckGo goodies")</script></a> <script>_("for Twitter and")</script> 
+						<a href="http://codemirror.net/" target="_blank">CodeMirror</a>
+					</small>
+				</div>
+			</div>
+		</footer>
+				
+		<div id="modCode" class="reveal-modal medium">
+			<h2><script>_("HTML code")</script></h2>
+			<form class="custom">
+				<div class="row">
+					<div class="large-5 columns">
+						<div class="row">
+							<div class="small-12 large-5 columns">
+								<p class="lead"><script>_("Display with")</script></p>
+							</div>
+							<div class="small-12 large-7 columns">
+								<select id="selMethod" class="dropdown">
+									<option value="link" selected data-lang="Link" data-init-lang>Link</option>
+									<option value="button" data-lang="Button" data-init-lang>Button</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="large-3 large-offset-4 columns">
+						<button type="button" class="button expand secondary" id="btnSelAll"><script>_("Select all")</script></button>
+					</div>
+				</div>
+			</form>
+			<p>
+				<textarea id="txtCode"></textarea>
+			</p>
+			<a class="close-reveal-modal">&#215;</a>
+		</div>
+		
+		<div id="modTwitter" class="reveal-modal small">
+			<h2><script>_("User profile info")</script></h2>
+			<form id="frmTwitter">
+				<div class="row">
+					<div class="large-3 columns">
+						<p class="lead"><script>_("Username")</script></p>
+					</div>
+					<div class="large-9 columns">
+						<div class="row collapse">
+							<div class="small-3 large-1 columns">
+								<span class="prefix radius">@</span>
+							</div>
+							<div class="small-9 large-11 columns">
+								<input type="text" pattern="^\w+$" id="txtTwitter" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="large-4 large-centered small-12 columns">
+						<button class="large success button expand" id="btnDisplayTwitter"><script>_("Display")</script></button>
+					</div>
+				</div>
+			</form>
+			<a class="close-reveal-modal">&#215;</a>
+		</div>
+		<script src="js/jquery.js"></script>
+		<script src="js/foundation/foundation.js"></script>
+		<script src="js/foundation/foundation.forms.js"></script>
+		<script src="js/foundation/foundation.reveal.js"></script>
+		<script src="js/codemirror.js"></script>
+		<script src="js/codemirror/xml.js"></script>
+		<script src="js/codemirror/javascript.js"></script>
+		<script src="js/codemirror/css.js"></script>
+		<script src="js/codemirror/htmlmixed.js"></script>
+		<script src="js/app.js"></script>
+	</body>
+</html>

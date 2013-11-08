@@ -1,0 +1,58 @@
+header {
+	margin-top: 10px;
+}
+
+#txtFile {
+	display: none !important;
+}
+
+#txtUrl:disabled, #txtFile:disabled + #spnFile {
+	display: none;
+}
+
+#spnFile {
+	position: relative;
+}
+
+#filIcon {
+	cursor: pointer;
+	opacity: 0;
+	position: absolute;
+	z-index: 1;
+}
+
+#txtFileName {
+	background-color: rgb(255, 255, 255);
+	border: none;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	-ms-box-shadow: none;
+	color: rgba(0, 0, 0, 0.75);
+	padding-left: 10px;
+}
+
+#txtSeconds {
+	text-align: right;
+}
+
+#frmMain {
+	margin-bottom: 0;
+}
+
+#msgUnsupported {
+	display: none;
+}
+
+.CodeMirror {
+	border: 1px solid #eee;
+	height: 150px;
+}
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: auto;
+}
+
+footer {
+	margin-bottom: 20px;
+}
