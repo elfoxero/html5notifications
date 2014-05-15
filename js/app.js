@@ -361,5 +361,14 @@
 		$("#btnDisplayTwitter").removeAttr("disabled");
 	}
 
-	Handler.checkPermission();
+	// for non chrome browser:
+	// Handler.checkPermission();
+	
+	// for chrome browser:
+	var chromeHackPerm = function () {
+		Handler.checkPermission();
+		window.removeEventListener('click', chromeHackPerm);
+	};
+
+	window.addEventListener('click', chromeHackPerm);
 // -->
