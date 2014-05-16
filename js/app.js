@@ -1,10 +1,15 @@
 // <!--
 	'use strict';
 	
-	if (!window.Notification || !window.FileReader || !window.history.pushState) {
+	if ((!window.Notification && !navigator.mozNotification) || !window.FileReader || !window.history.pushState) {
 		$("#msgUnsupported").show();
-		$("input[name='permission']").attr("disabled", true);
-		
+		$("input[name='permission']").attr("disabled", true);	
+	}
+
+	if ("mozNotification" in navigator) {
+		window.Notification = {
+			"permission": "granted"
+		};
 	}
 
 	$("*[data-init-lang]").each(function (index, elem) {
@@ -19,11 +24,16 @@
 
 	var Handler = {
 		checkPermission: function () {
-			Notification.requestPermission(function (permission) {
-				if (permission === "granted") {
-					Handler.enable(true);
-				}
-			});
+			if ("mozNotification" in navigator) {
+				$("#frmMain > .row:first-child").hide()
+				Handler.enable(true);
+			} else {
+				Notification.requestPermission(function (permission) {
+					if (permission === "granted") {
+						Handler.enable(true);
+					}
+				});
+			}
 		},
 		displayNotification: function (title, message, icon, delay, onclick) {
 			var instance;
@@ -41,21 +51,43 @@
 					attributes.icon = icon;
 				}
 				
-				if (delay > 0) {
-					window.setTimeout(function () {
+				if ("mozNotification" in navigator) {
+					if (delay > 0) {
+						window.setTimeout(function () {
+							instance = navigator.mozNotification.createNotification(title.substr(0, 100), attributes.body || '', attributes.icon || null);
+							
+							if (onclick !== undefined) {
+								instance.onclick = onclick;
+							}
+
+							instance.show();
+						}, delay * 1000);
+					} else {
+						instance = navigator.mozNotification.createNotification(title.substr(0, 100), attributes.body || '', attributes.icon || null);
+						
+						if (onclick !== undefined) {
+							instance.onclick = onclick;
+						}
+
+						instance.show();
+					}
+				} else {
+					if (delay > 0) {
+						window.setTimeout(function () {
+							instance = new Notification(title.substr(0, 100), attributes);
+							
+							if (onclick !== undefined) {
+								instance.onclick = onclick;
+							}
+						}, delay * 1000);
+					} else {
 						instance = new Notification(title.substr(0, 100), attributes);
 						
 						if (onclick !== undefined) {
 							instance.onclick = onclick;
 						}
-					}, delay * 1000);
-				} else {
-					instance = new Notification(title.substr(0, 100), attributes);
-					
-					if (onclick !== undefined) {
-						instance.onclick = onclick;
 					}
-				}							
+				}
 			}
 		},
 		enable: function (val) {
